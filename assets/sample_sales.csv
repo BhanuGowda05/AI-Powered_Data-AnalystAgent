@@ -1,0 +1,26 @@
+Order_ID,Product,Category,Region,Sales_Rep,Units_Sold,Unit_Price,Revenue,Discount,Order_Date
+1001,Laptop Pro,Electronics,North,Alice,5,1200,6000,0.05,2024-01-03
+1002,Office Chair,Furniture,South,Bob,12,250,3000,0.10,2024-01-07
+1003,Wireless Mouse,Electronics,East,Carol,30,45,1350,0.00,2024-01-09
+1004,Standing Desk,Furniture,West,Dave,8,450,3600,0.08,2024-01-12
+1005,Monitor 27in,Electronics,North,Alice,10,380,3800,0.05,2024-01-15
+1006,Keyboard,Electronics,South,Bob,25,80,2000,0.00,2024-01-18
+1007,Bookshelf,Furniture,East,Carol,6,180,1080,0.00,2024-01-20
+1008,Webcam HD,Electronics,West,Dave,20,95,1900,0.05,2024-01-22
+1009,Laptop Pro,Electronics,South,Alice,3,1200,3600,0.10,2024-02-01
+1010,Office Chair,Furniture,North,Bob,15,250,3750,0.05,2024-02-04
+1011,USB Hub,Electronics,East,Carol,40,35,1400,0.00,2024-02-06
+1012,Desk Lamp,Furniture,West,Dave,18,60,1080,0.00,2024-02-09
+1013,Wireless Mouse,Electronics,North,Alice,22,45,990,0.00,2024-02-11
+1014,Monitor 27in,Electronics,East,Bob,7,380,2660,0.05,2024-02-14
+1015,Laptop Pro,Electronics,West,Carol,4,1200,4800,0.10,2024-02-17
+1016,Standing Desk,Furniture,South,Dave,5,450,2250,0.08,2024-02-20
+1017,Keyboard,Electronics,North,Alice,35,80,2800,0.00,2024-03-02
+1018,Webcam HD,Electronics,South,Bob,14,95,1330,0.05,2024-03-05
+1019,Bookshelf,Furniture,West,Carol,9,180,1620,0.00,2024-03-08
+1020,USB Hub,Electronics,East,Dave,50,35,1750,0.00,2024-03-10
+1021,Monitor 27in,Electronics,North,Alice,11,380,4180,0.05,2024-03-13
+1022,Office Chair,Furniture,South,Bob,10,250,2500,0.10,2024-03-16
+1023,Laptop Pro,Electronics,East,Carol,6,1200,7200,0.10,2024-03-19
+1024,Desk Lamp,Furniture,North,Dave,25,60,1500,0.00,2024-03-22
+1025,Keyboard,Electronics,West,Alice,20,80,1600,0.00,2024-03-25
