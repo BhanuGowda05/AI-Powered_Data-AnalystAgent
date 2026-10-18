@@ -619,7 +619,7 @@ elif selected_page == "Dataset Overview":
     # values parse successfully, we count that column as a datetime.
     for col in categorical_cols[:]:
         try:
-            parsed = pd.to_datetime(df[col], errors="coerce", infer_datetime_format=True)
+            parsed = pd.to_datetime(df[col], errors="coerce")
             if parsed.notna().mean() > 0.8:   # >80 % parsed → treat as datetime
                 datetime_cols.append(col)
                 categorical_cols.remove(col)

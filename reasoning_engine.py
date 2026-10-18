@@ -56,6 +56,7 @@ OPERATION_TO_AGG = {
     "count":        "count",
     "distribution": "value_counts",
     "list":         "list",
+    "median":       "median",   # added
 }
 
 # Which operations produce a sorted descending result?
@@ -63,6 +64,51 @@ DESCENDING_OPS = {"maximum", "sum"}
 
 # Which operations produce a sorted ascending result?
 ASCENDING_OPS  = {"minimum"}
+
+# Numeric-column hint words (mirrors question_parser._NUMERIC_HINT_WORDS)
+_NUMERIC_HINTS = {
+    "salary", "revenue", "sales", "price", "cost", "amount", "total",
+    "qty", "quantity", "score", "rate", "income", "profit",
+    "age", "value", "weight", "height", "units", "discount", "number",
+}
+
+# Categorical-column hint words
+_CATEGORICAL_HINTS = {
+    "product", "category", "department", "region", "city", "country",
+    "name", "type", "status", "gender", "group", "brand", "segment",
+    "customer", "employee", "location", "store", "team",
+}
+
+
+def _guess_numeric_column(df_columns: list[str]) -> str | None:
+    """
+    When no target column was matched from the question, pick the most
+    appropriate numeric-looking column from the DataFrame's column list.
+    Skips ID, Date, Name columns as they are rarely the analysis target.
+    """
+    # Pass 1: column whose name contains a known numeric hint word
+    for col in df_columns:
+        col_words = set(col.lower().replace("_", " ").split())
+        if col_words & _NUMERIC_HINTS:
+            return col
+    # Pass 2: first column that doesn't look like an ID / date / name
+    skip = {"id", "date", "time", "name", "code", "key"}
+    for col in df_columns:
+        col_words = set(col.lower().replace("_", " ").split())
+        if not (col_words & skip):
+            return col
+    return df_columns[0] if df_columns else None
+
+
+def _guess_categorical_column(df_columns: list[str]) -> str | None:
+    """
+    Pick the most appropriate categorical-looking column when none matched.
+    """
+    for col in df_columns:
+        col_words = set(col.lower().replace("_", " ").split())
+        if col_words & _CATEGORICAL_HINTS:
+            return col
+    return df_columns[0] if df_columns else None
 
 
 # ==============================================================================
@@ -141,9 +187,10 @@ def build_plan(nlu_result: dict, df_columns: list[str]) -> dict:
     has_filter   = nlu_result.get("has_filter", False)
     confidence   = nlu_result.get("confidence", "LOW")
 
-    aggregation    = OPERATION_TO_AGG.get(operation, "unknown")
-    analysis_type  = _determine_analysis_type(operation, target_col, group_col)
+    # analysis_type and aggregation are computed AFTER the column fallback below
     sort_direction = _sort_direction(operation)
+    aggregation    = OPERATION_TO_AGG.get(operation, "unknown")   # preliminary
+    analysis_type  = _determine_analysis_type(operation, target_col, group_col)  # preliminary
 
     # "highest / lowest / best / worst" implies limit = 1
     question_lower = nlu_result.get("original_question", "").lower()
@@ -166,6 +213,31 @@ def build_plan(nlu_result: dict, df_columns: list[str]) -> dict:
             f"⚠️ Group column '{group_col}' was not found in the dataset."
         )
         group_col = None
+
+    # ── Smart fallback: guess best column when target_col is still None ──────
+    # Handles "What is the total?" / "What is the average?" with no column match.
+    if target_col is None and operation in ("average", "maximum", "minimum",
+                                            "sum", "median", "count"):
+        guessed = _guess_numeric_column(df_columns)
+        if guessed:
+            target_col = guessed
+            warnings.append(
+                f"ℹ️ No specific column detected in your question — "
+                f"analysing **'{target_col}'** as the best match. "
+                f"Mention a column name for a precise answer."
+            )
+
+    if target_col is None and operation == "distribution":
+        guessed = _guess_categorical_column(df_columns)
+        if guessed:
+            target_col = guessed
+            warnings.append(
+                f"ℹ️ No column detected — showing distribution of **'{target_col}'**."
+            )
+
+    # Re-compute analysis_type and aggregation now that target_col may be filled
+    analysis_type  = _determine_analysis_type(operation, target_col, group_col)
+    aggregation    = OPERATION_TO_AGG.get(operation, "unknown")
 
     # ── Determine plan status ────────────────────────────────────────────────
     if analysis_type == "unknown" or confidence == "LOW":

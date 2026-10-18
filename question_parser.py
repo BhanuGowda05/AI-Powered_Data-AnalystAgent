@@ -49,50 +49,71 @@ import re
 
 OPERATION_KEYWORDS = {
     # Average / Mean
-    "average": "average",
-    "mean":    "average",
-    "avg":     "average",
+    "average":  "average",
+    "mean":     "average",
+    "avg":      "average",
+    "median":   "average",
+    "typical":  "average",
 
     # Maximum / Highest
-    "maximum": "maximum",
-    "max":     "maximum",
-    "highest": "maximum",
-    "largest": "maximum",
-    "most":    "maximum",
-    "top":     "maximum",
-    "best":    "maximum",
-    "peak":    "maximum",
+    "maximum":  "maximum",
+    "max":      "maximum",
+    "highest":  "maximum",
+    "largest":  "maximum",
+    "most":     "maximum",
+    "top":      "maximum",
+    "best":     "maximum",
+    "peak":     "maximum",
+    "biggest":  "maximum",
+    "greatest": "maximum",
+    "leading":  "maximum",
 
     # Minimum / Lowest
-    "minimum": "minimum",
-    "min":     "minimum",
-    "lowest":  "minimum",
-    "smallest":"minimum",
-    "least":   "minimum",
-    "bottom":  "minimum",
-    "worst":   "minimum",
+    "minimum":  "minimum",
+    "min":      "minimum",
+    "lowest":   "minimum",
+    "smallest": "minimum",
+    "least":    "minimum",
+    "bottom":   "minimum",
+    "worst":    "minimum",
+    "cheapest": "minimum",
+    "fewest":   "minimum",
 
     # Count
-    "count":   "count",
-    "how many":"count",
-    "number":  "count",
+    "count":    "count",
+    "how many": "count",
+    "number":   "count",
+    "many":     "count",
+    "frequency":"count",
+    "how much": "sum",
 
     # Sum
-    "sum":     "sum",
-    "total":   "sum",           # "total" → sum (e.g. "total sales")
-    "revenue": "sum",
+    "sum":      "sum",
+    "total":    "sum",
+    "revenue":  "sum",
+    "overall":  "sum",
+    "combined": "sum",
+    "aggregate":"sum",
 
     # List / Show
-    "list":    "list",
-    "show":    "list",
-    "display": "list",
-    "what are":"list",
-    "give":    "list",
+    "list":     "list",
+    "show":     "list",
+    "display":  "list",
+    "what are": "list",
+    "give":     "list",
+    "get":      "list",
+    "fetch":    "list",
+    "all":      "list",
+    "print":    "list",
 
     # Distribution
     "distribution": "distribution",
-    "spread":       "distribution",
-    "range":        "distribution",
+    "spread":        "distribution",
+    "range":         "distribution",
+    "breakdown":     "distribution",
+    "proportion":    "distribution",
+    "percentage":    "distribution",
+    "share":         "distribution",
 }
 
 # Words that signal a GROUPING relationship
@@ -247,6 +268,25 @@ def _split_by_role(matched_columns: list[str]) -> tuple[list[str], list[str]]:
 
 
 # ==============================================================================
+# HELPER: infer a sensible default operation when the user's question has no
+# explicit keyword (e.g. "What is the salary?")
+# ==============================================================================
+def _infer_default_operation(col_name: str) -> str:
+    """
+    Given a matched column name, return the most sensible default operation.
+    - Numeric-looking columns  → 'average'
+    - Categorical-looking cols → 'list'
+    """
+    col_words = set(tokenise(col_name))
+    if col_words & _NUMERIC_HINT_WORDS:
+        return "average"
+    elif col_words & _CATEGORICAL_HINT_WORDS:
+        return "list"
+    else:
+        return "average"   # safe default
+
+
+# ==============================================================================
 # HELPER: detect the operation from the question
 # ==============================================================================
 def detect_operation(question: str) -> str | None:
@@ -344,7 +384,7 @@ def parse_question(question: str, df_columns: list[str]) -> dict:
         result["notes"].append(f"✅ Operation detected: **{operation}**")
     else:
         result["notes"].append(
-            "⚠️ No operation keyword found (e.g. average, sum, count, highest)."
+            "⚠️ No explicit operation keyword found — will attempt to infer from context."
         )
 
     # ── Step 2: Match columns ────────────────────────────────────────────────
@@ -360,6 +400,17 @@ def parse_question(question: str, df_columns: list[str]) -> dict:
         result["notes"].append(
             "⚠️ No column names could be matched in the question. "
             "Try using words that appear in your column names."
+        )
+
+    # ── Step 1b: Infer default operation when none detected ───────────────────
+    # e.g. "What is the salary?" — no keyword, but column matched → default to avg
+    if operation is None and matched:
+        operation = _infer_default_operation(matched[0])
+        result["operation"] = operation
+        result["notes"].append(
+            f"ℹ️ No operation keyword found — defaulting to **{operation}** "
+            f"based on column type. Add a keyword like 'average', 'total', "
+            f"'highest', 'count' for precise control."
         )
 
     # ── Step 3: Assign target and group columns ──────────────────────────────
