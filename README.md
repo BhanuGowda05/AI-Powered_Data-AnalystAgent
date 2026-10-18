@@ -43,7 +43,7 @@ Users simply upload a dataset, ask questions like *"Which product has the highes
 |:------|:-----------|
 | **Frontend / UI** | Streamlit + Custom CSS |
 | **NLU Engine** | Pure Python — keyword matching, regex tokenisation |
-| **Data Processing** | pandas ≥ 2.0, NumPy ≥ 1.26 |
+| **Data Processing** | pandas , NumPy  |
 | **Visualisation** | Plotly Express |
 | **File Parsing** | openpyxl (`.xlsx`), xlrd (`.xls`) |
 | **Language** | Python 3.10+ |
