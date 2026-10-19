@@ -199,4 +199,3 @@ Expected: `TOTAL: 25  PASSED: 25  FAILED: 0`
 
 ---
 
-*Built with Python, Streamlit, and pandas. No external AI APIs. Everything computed locally from your data.*
