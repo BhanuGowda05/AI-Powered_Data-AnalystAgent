@@ -1,6 +1,6 @@
 # 🤖 AI-Powered Data Analyst Agent
 
-> An autonomous, explainable data analysis assistant built entirely with Python and Streamlit — no external LLMs, no paid APIs, no internet required at runtime.
+ **An autonomous, explainable data analysis assistant built entirely with Python and Streamlit — no external LLMs, no paid APIs, no internet required at runtime.
 
 **Developed by:** Bhanushree G | CSE – Data Science | Nagarjuna College of Engineering and Technology (NCET)
 
@@ -192,7 +192,11 @@ Expected: `TOTAL: 25  PASSED: 25  FAILED: 0`
 
 ---
 
-## 👩‍💻 About
+**Project Type:** 
+**College Mini Project | Domain: Data Science / Artificial Intelligence**
+
+## 👩‍💻 Developed by:
+**Bhanushree G | CSE – Data Science | Nagarjuna College of Engineering and Technology (NCET)**
 
 **Bhanushree G**  
 CSE – Data Science  
