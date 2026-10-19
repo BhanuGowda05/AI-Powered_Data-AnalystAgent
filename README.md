@@ -2,7 +2,7 @@
 
  An autonomous, explainable data analysis assistant built entirely with Python and Streamlit — no external LLMs, no paid APIs, no internet required at runtime.
 An AI-powered data analysis application designed to simplify the process of analyzing datasets. The system allows users to upload a dataset and automatically performs data understanding, cleaning, exploratory data analysis, visualization, and generates meaningful insights
----
+
 
 ## 📌 Overview
 
